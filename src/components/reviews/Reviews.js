@@ -16,30 +16,33 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
         getMovieData(movieId);
     },[])
 
-    const addReview = async (e) =>{
+    const addReview = async (e) => {
         e.preventDefault();
-
+    
         const rev = revText.current;
-
-        try
-        {
-            const response = await api.post("/api/v1/reviews",{reviewBody:rev.value,imdbId:movieId});
-
-            const updatedReviews = [...reviews, {body:rev.value}];
     
-            rev.value = "";
+        try {
+            const response = await api.post("/api/v1/reviews", { reviewBody: rev.value, imdbId: movieId });
     
-            setReviews(updatedReviews);
+            if (response.status === 200) {
+                const newReview = { body: rev.value };
+    
+                const updatedReviews = reviews ? [...reviews, newReview] : [newReview];
+    
+                setReviews(updatedReviews);
+    
+                rev.value = "";
+    
+                console.log("Review added successfully:", newReview);
+            } else {
+                console.error("Unexpected response status:", response.status);
+            }
+        } catch (error) {
+            console.error("Error adding review:", error);
         }
-        catch(err)
-        {
-            console.error(err);
-        }
-        
-
-
-
     }
+    
+    
 
   return (
     <Container>
